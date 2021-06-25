@@ -1,0 +1,20 @@
+[Unit]
+Description=Orvibo S20/AllOne MQTT Client/Daemon
+Documentation=https://github.com/nergal/homeassistant-orvibo-mqtt
+After=network.target mosquitto.service
+
+[Service]
+Type=notify
+User=daemon
+Group=daemon
+WorkingDirectory=/opt/homeassistant-orvibo-mqtt/
+ExecStart=/usr/bin/python3 /opt/homeassistant-orvibo-mqtt/daemon.py
+StandardOutput=null
+#StandardOutput=syslog
+#SyslogIdentifier=homeassistant-orvibo-mqtt
+StandardError=journal
+Environment=PYTHONUNBUFFERED=true
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
