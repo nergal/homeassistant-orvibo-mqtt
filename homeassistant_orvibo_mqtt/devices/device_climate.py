@@ -126,12 +126,10 @@ class DeviceClimate(AbstractDevice):
         return dumps(payload)
 
     def on_connect(self, client, userdata, flags, rc):
+        client.subscribe(DeviceClimate.HA_INIT_TOPIC)
         client.subscribe("%s/#" % self.topic_name)
 
-        # @TODO execute on hass start
-        self.send_config(client)
-        self.send_availability(client, True)
-        self.send_stats(client)
+        self.do_initialize(client)
 
     def on_message(self, client, userdata, msg):
         if msg.topic == DeviceClimate.MODE_TOPIC % self.topic_name:
@@ -142,6 +140,8 @@ class DeviceClimate(AbstractDevice):
             self.do_fan_change(client, msg.payload.decode("utf-8"))
         elif msg.topic == DeviceClimate.SWING_TOPIC % self.topic_name:
             self.do_swing_change(client, msg.payload.decode("utf-8"))
+        elif msg.topic == DeviceClimate.HA_INIT_TOPIC:
+            self.do_initialize(client)
 
         _LOGGER.debug("Message received-> " +
                       msg.topic + " " + str(msg.payload))
@@ -149,6 +149,12 @@ class DeviceClimate(AbstractDevice):
     def __send_ir_signal(self, file_path):
         real_path = str(PurePath(os.getcwd(), file_path))
         self.device.emit_ir(real_path)
+
+    def do_initialize(self, client):
+        _LOGGER.info("Send initialization info for %s (%s)" % (self.name, self.mac))
+        self.send_config(client)
+        self.send_availability(client, True)
+        self.send_stats(client)
 
     def do_mode_change(self, client, mode):
         _LOGGER.info("Change mode => " + mode)
@@ -184,7 +190,7 @@ class DeviceClimate(AbstractDevice):
         self.send_stats(client)
 
     def do_temperature_change(self, client, temperature):
-        print("Change temperature => " + temperature)
+        _LOGGER.info("Change temperature => " + temperature)
 
         t_value = int(float(temperature))
 

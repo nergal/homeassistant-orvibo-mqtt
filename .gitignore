@@ -1,4 +1,5 @@
 .vscode/
+__pycache__
 ir-reverse/
 mqtt.md
 config.yaml

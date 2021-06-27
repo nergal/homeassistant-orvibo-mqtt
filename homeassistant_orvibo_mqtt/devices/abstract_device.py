@@ -11,6 +11,8 @@ class AbstractDevice(ABC):
     ONLINE_STATE = 'ONLINE'
     OFFLINE_STATE = 'OFFLINE'
 
+    HA_INIT_TOPIC = "homeassistant/status"
+
     def __init__(self, device, type, name):
         self.name = name
         self.device = device

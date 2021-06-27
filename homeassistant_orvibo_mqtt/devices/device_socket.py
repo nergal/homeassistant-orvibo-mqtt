@@ -55,18 +55,26 @@ class DeviceSocket(AbstractDevice):
 
     def send_command(self, client, msg):
         if msg == DeviceSocket.ON_VALUE:
+            _LOGGER.info("Change state => ON")
             self.device.on = True
             self.send_state(client, self.device.on)
-
         elif msg == DeviceSocket.OFF_VALUE:
+            _LOGGER.info("Change state => OFF")
             self.device.on = False
             self.send_state(client, self.device.on)
+        elif msg == DeviceSocket.HA_INIT_TOPIC:
+            self.do_initialize(client)
 
-    def on_connect(self, client, userdata, flags, rc):
-        client.subscribe("%s/#" % self.topic_name)
-        # @TODO execute on hass start
+    def do_initialize(self, client):
+        _LOGGER.info("Send initialization info for %s (%s)" % (self.name, self.mac))
         self.send_config(client)
         self.send_availability(client, True)
+
+    def on_connect(self, client, userdata, flags, rc):
+        client.subscribe(DeviceSocket.HA_INIT_TOPIC)
+        client.subscribe("%s/#" % self.topic_name)
+
+        self.do_initialize(client)
 
     def on_message(self, client, userdata, msg):
         if msg.topic == DeviceSocket.COMMAND_TOPIC % self.topic_name:
