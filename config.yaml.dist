@@ -2,14 +2,11 @@ mqtt_host: 127.0.0.1
 mqtt_port: 1883
 devices:
   - ip: 192.168.1.100
-    mac: 111111111111
-    type: socket
+    type: switch
     name: Orvibo S20 - living room
   - ip: 192.168.1.101
-    mac: 222222222222
-    type: irda
+    type: climate
     name: IR LG Air conditioner
   - ip: 192.168.1.102
-    mac: 333333333333
-    type: socket
+    type: light
     name: Orvibo S20 - kitchen

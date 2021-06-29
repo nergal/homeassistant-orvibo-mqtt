@@ -2,6 +2,8 @@ from pathlib import PurePath
 import os
 import logging
 from json import dumps
+import xml.etree.ElementTree as ET
+from pprint import pprint
 from .abstract_device import AbstractDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -12,25 +14,25 @@ class DeviceClimate(AbstractDevice):
     ONLINE_STATE = 'ONLINE'
     OFFLINE_STATE = 'OFFLINE'
 
-    SIGNAL_OFF = "./data/off.ir"
-    SIGNAL_ON = "./data/on.ir"
+    SIGNAL_OFF = "off"
+    SIGNAL_ON = "on"
 
-    SIGNAL_MODE_COOL = "./data/mode_cool.ir"
-    SIGNAL_MODE_AUTO = "./data/mode_auto.ir"
-    SIGNAL_MODE_DRY = "./data/mode_dry.ir"
-    SIGNAL_MODE_FAN = "./data/mode_fan.ir"
-    SIGNAL_MODE_HEAT = "./data/mode_heat.ir"
+    SIGNAL_MODE_COOL = "mode_cool"
+    SIGNAL_MODE_AUTO = "mode_auto"
+    SIGNAL_MODE_DRY = "mode_dry"
+    SIGNAL_MODE_FAN = "mode_fan"
+    SIGNAL_MODE_HEAT = "mode_heat"
 
-    SIGNAL_FAN_AUTO = "./data/fan_auto.ir"
-    SIGNAL_FAN_HIGH = "./data/fan_high.ir"
-    SIGNAL_FAN_LOW = "./data/fan_low.ir"
-    SIGNAL_FAN_MID = "./data/fan_mid.ir"
-    # SIGNAL_FAN_JET = "./data/fan_max.ir"
+    SIGNAL_FAN_AUTO = "fan_auto"
+    SIGNAL_FAN_HIGH = "fan_high"
+    SIGNAL_FAN_LOW = "fan_low"
+    SIGNAL_FAN_MID = "fan_mid"
+    # SIGNAL_FAN_JET = "fan_max"
 
-    SIGNAL_SWING_ON = "./data/swing_on.ir"
-    SIGNAL_SWING_OFF = "./data/swing_off.ir"
+    SIGNAL_SWING_ON = "swing_on"
+    SIGNAL_SWING_OFF = "swing_off"
 
-    SIGNAL_T = "./data/t%d.ir"
+    SIGNAL_T = "t%d"
 
     MODE_OFF = "off"
     MODE_COOL = "cool"
@@ -73,32 +75,48 @@ class DeviceClimate(AbstractDevice):
     state_swing = SWING_OFF
     state_action = ACTION_OFF
 
+    ir_commands = {}
+
+    def __init__(self, device, type, name):
+        super().__init__(device, type, name)
+
+        mapping_file = PurePath(os.getcwd(), "homeassistant_orvibo_mqtt/devices/ir_mapping.xml")
+        mapping_root = ET.parse(mapping_file).getroot()
+
+        for elem in mapping_root.findall('remote/code'):
+            name = elem.attrib['name']
+            ccf = elem.find('ccf').text
+
+            hex_snapshot = " ".join(map(lambda x: x[2:4] + x[0:2], ccf.split(' ')))
+            self.ir_commands[name] = bytes.fromhex(hex_snapshot)
+
+
     def get_discovery_payload(self):
         payload = {
             "name": self.name,
             "unique_id": self.mac,
-            "payload_on": DeviceClimate.ON_VALUE,
-            "payload_off": DeviceClimate.OFF_VALUE,
-            "payload_available": DeviceClimate.ONLINE_STATE,
-            "payload_not_available": DeviceClimate.OFFLINE_STATE,
-            "availability_topic": DeviceClimate.AVAILABILITY_TOPIC % self.topic_name,
-            "action_topic": DeviceClimate.STATS_TOPIC % self.topic_name,
+            "payload_on": self.ON_VALUE,
+            "payload_off": self.OFF_VALUE,
+            "payload_available": self.ONLINE_STATE,
+            "payload_not_available": self.OFFLINE_STATE,
+            "availability_topic": self.AVAILABILITY_TOPIC % self.topic_name,
+            "action_topic": self.STATS_TOPIC % self.topic_name,
             "action_template": '{{value_json.action}}',
-            "temperature_command_topic": DeviceClimate.TEMPERATURE_TOPIC % self.topic_name,
-            "mode_command_topic": DeviceClimate.MODE_TOPIC % self.topic_name,
-            "mode_state_topic": DeviceClimate.STATS_TOPIC % self.topic_name,
+            "temperature_command_topic": self.TEMPERATURE_TOPIC % self.topic_name,
+            "mode_command_topic": self.MODE_TOPIC % self.topic_name,
+            "mode_state_topic": self.STATS_TOPIC % self.topic_name,
             "mode_state_template": '{{value_json.mode}}',
-            "modes": [DeviceClimate.MODE_AUTO, DeviceClimate.MODE_OFF, DeviceClimate.MODE_COOL, DeviceClimate.MODE_HEAT, DeviceClimate.MODE_DRY, DeviceClimate.MODE_FAN],
-            "current_temperature_topic": DeviceClimate.STATS_TOPIC % self.topic_name,
+            "modes": [self.MODE_AUTO, self.MODE_OFF, self.MODE_COOL, self.MODE_HEAT, self.MODE_DRY, self.MODE_FAN],
+            "current_temperature_topic": self.STATS_TOPIC % self.topic_name,
             "current_temperature_template": "{{value_json.temperature}}",
-            "fan_mode_command_topic": DeviceClimate.FAN_TOPIC % self.topic_name,
-            "fan_mode_state_topic": DeviceClimate.STATS_TOPIC % self.topic_name,
+            "fan_mode_command_topic": self.FAN_TOPIC % self.topic_name,
+            "fan_mode_state_topic": self.STATS_TOPIC % self.topic_name,
             "fan_mode_state_template": '{{value_json.fanMode}}',
-            "fan_modes": [DeviceClimate.FAN_AUTO, DeviceClimate.FAN_LOW, DeviceClimate.FAN_MEDIUM, DeviceClimate.FAN_HIGH],
-            "swing_mode_command_topic": DeviceClimate.SWING_TOPIC % self.topic_name,
+            "fan_modes": [self.FAN_AUTO, self.FAN_LOW, self.FAN_MEDIUM, self.FAN_HIGH],
+            "swing_mode_command_topic": self.SWING_TOPIC % self.topic_name,
             "swing_mode_state_template": '{{value_json.swing}}',
-            "swing_mode_state_topic": DeviceClimate.STATS_TOPIC % self.topic_name,
-            "swing_modes": [DeviceClimate.SWING_ON, DeviceClimate.SWING_OFF],
+            "swing_mode_state_topic": self.STATS_TOPIC % self.topic_name,
+            "swing_modes": [self.SWING_ON, self.SWING_OFF],
             "min_temp": self.MIN_TEMPERATURE,
             "max_temp": self.MAX_TEMPERATURE,
             "temp_step": 1,
@@ -126,29 +144,33 @@ class DeviceClimate(AbstractDevice):
         return dumps(payload)
 
     def on_connect(self, client, userdata, flags, rc):
-        client.subscribe(DeviceClimate.HA_INIT_TOPIC)
+        client.subscribe(self.HA_INIT_TOPIC)
         client.subscribe("%s/#" % self.topic_name)
 
         self.do_initialize(client)
 
     def on_message(self, client, userdata, msg):
-        if msg.topic == DeviceClimate.MODE_TOPIC % self.topic_name:
+        if msg.topic == self.MODE_TOPIC % self.topic_name:
             self.do_mode_change(client, msg.payload.decode("utf-8"))
-        elif msg.topic == DeviceClimate.TEMPERATURE_TOPIC % self.topic_name:
+        elif msg.topic == self.TEMPERATURE_TOPIC % self.topic_name:
             self.do_temperature_change(client, msg.payload.decode("utf-8"))
-        elif msg.topic == DeviceClimate.FAN_TOPIC % self.topic_name:
+        elif msg.topic == self.FAN_TOPIC % self.topic_name:
             self.do_fan_change(client, msg.payload.decode("utf-8"))
-        elif msg.topic == DeviceClimate.SWING_TOPIC % self.topic_name:
+        elif msg.topic == self.SWING_TOPIC % self.topic_name:
             self.do_swing_change(client, msg.payload.decode("utf-8"))
-        elif msg.topic == DeviceClimate.HA_INIT_TOPIC:
+        elif msg.topic == self.HA_INIT_TOPIC:
             self.do_initialize(client)
 
         _LOGGER.debug("Message received-> " +
                       msg.topic + " " + str(msg.payload))
 
-    def __send_ir_signal(self, file_path):
-        real_path = str(PurePath(os.getcwd(), file_path))
-        self.device.emit_ir(real_path)
+    def __send_ir_signal(self, ir_command):
+        signal = self.ir_commands.get(ir_command)
+        if signal:
+            pprint(signal)
+            self.device.emit_ir(signal)
+        else:
+            _LOGGER.error("Unknown signal: %s" % ir_command)
 
     def do_initialize(self, client):
         _LOGGER.info("Send initialization info for %s (%s)" % (self.name, self.mac))
@@ -231,17 +253,17 @@ class DeviceClimate(AbstractDevice):
 
     def send_config(self, client):
         discovery_payload = self.get_discovery_payload()
-        client.publish(DeviceClimate.DISCOVERY_TOPIC %
+        client.publish(self.DISCOVERY_TOPIC %
                        self.topic_name, payload=discovery_payload)
 
     def send_stats(self, client):
         payload = self.get_current_status()
-        client.publish(DeviceClimate.STATS_TOPIC %
+        client.publish(self.STATS_TOPIC %
                        self.topic_name, payload=payload)
 
     def send_availability(self, client, value: bool):
-        payload = DeviceClimate.ONLINE_STATE if value else DeviceClimate.OFFLINE_STATE
-        client.publish(DeviceClimate.AVAILABILITY_TOPIC %
+        payload = self.ONLINE_STATE if value else self.OFFLINE_STATE
+        client.publish(self.AVAILABILITY_TOPIC %
                        self.topic_name, payload=payload)
 
     def destruct(self, client):
