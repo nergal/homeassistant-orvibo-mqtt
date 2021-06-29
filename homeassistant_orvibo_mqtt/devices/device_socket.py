@@ -36,8 +36,8 @@ class DeviceSocket(AbstractDevice):
         }
         return dumps(payload)
 
-    def destruct(self, client):
-        self.send_availability(client, False)
+    def __del__(self):
+        self.send_availability(self.client, False)
 
     def send_config(self, client):
         discovery_payload = self.get_discovery_payload()

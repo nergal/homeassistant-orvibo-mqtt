@@ -77,8 +77,8 @@ class DeviceClimate(AbstractDevice):
 
     ir_commands = {}
 
-    def __init__(self, device, type, name):
-        super().__init__(device, type, name)
+    def __init__(self, device, device_config, config):
+        super().__init__(device, device_config, config)
 
         mapping_file = PurePath(os.getcwd(), "homeassistant_orvibo_mqtt/devices/ir_mapping.xml")
         mapping_root = ET.parse(mapping_file).getroot()
@@ -266,5 +266,5 @@ class DeviceClimate(AbstractDevice):
         client.publish(self.AVAILABILITY_TOPIC %
                        self.topic_name, payload=payload)
 
-    def destruct(self, client):
-        self.send_availability(client, False)
+    def __del__(self):
+        self.send_availability(self.client, False)

@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 import binascii
+import paho.mqtt.client as mqtt
 import logging
+import threading
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -13,17 +15,40 @@ class AbstractDevice(ABC):
 
     HA_INIT_TOPIC = "homeassistant/status"
 
-    def __init__(self, device, type, name):
-        self.name = name
+    def __init__(self, device, device_config, config):
         self.device = device
-        self.type = type
+        self.name = device_config['name']
+        self.type = device_config['type']
         self.mac = binascii.hexlify(self.device.mac).decode("utf-8")
-        self.topic_name = self.getTopicName()
+        self.topic_name = self.get_topic_name()
+
+        self.client = self.get_mqtt_client(config)
 
         _LOGGER.info(
             "New device has been initialized with topic = %s" % self.topic_name)
 
-    def getTopicName(self):
+    def get_mqtt_client(self, config):
+        mqtt_host = config['mqtt_host'].get()
+        mqtt_port = config['mqtt_port'].get(int)
+
+        client = mqtt.Client(self.mac)
+        client.on_connect = self.on_connect
+        client.on_message = self.on_message
+
+        client.connect(mqtt_host, mqtt_port)
+
+        return client
+
+    def loop_forever(self):
+        try:
+            self.thread = threading.Thread(target=self.client.loop_forever)
+            self.thread.daemon=True
+            self.thread.start()
+        except (KeyboardInterrupt, SystemExit):
+            print("OFF")
+            _LOGGER.warning("EXIT")
+
+    def get_topic_name(self):
         return "homeassistant/%s/%s" % (self.type, self.mac)
 
     @abstractmethod
@@ -32,7 +57,4 @@ class AbstractDevice(ABC):
 
     @abstractmethod
     def on_message(self, client, userdata, msg):
-        pass
-
-    def destruct(self, client):
         pass
