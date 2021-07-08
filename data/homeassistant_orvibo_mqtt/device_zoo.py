@@ -6,7 +6,7 @@ import logging
 from sdnotify import SystemdNotifier
 from .devices import DeviceSocket, DeviceClimate, AbstractDevice
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 _LOGGER = logging.getLogger(__name__)
 
 

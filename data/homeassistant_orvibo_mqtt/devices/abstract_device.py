@@ -35,6 +35,11 @@ class AbstractDevice(ABC):
         client.on_connect = self.on_connect
         client.on_message = self.on_message
 
+        mqtt_username = config['mqtt_username'].get()
+        mqtt_password = config['mqtt_password'].get()
+        if mqtt_username and mqtt_password: 
+            client.username_pw_set(username=mqtt_username, password=mqtt_password)
+
         client.connect(mqtt_host, mqtt_port)
 
         return client
