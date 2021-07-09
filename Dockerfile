@@ -1,17 +1,24 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
+WORKDIR /app
+ENV LANG C.UTF-8 \
+  PYTHONFAULTHANDLER=1 \
+  PYTHONHASHSEED=random \
+  PYTHONDONTWRITEBYTECODE=1 \
+  # pip:
+  PIP_NO_CACHE_DIR=off \
+  PIP_DISABLE_PIP_VERSION_CHECK=on \
+  PIP_DEFAULT_TIMEOUT=100
 
-ENV LANG C.UTF-8
+RUN apk add --no-cache python3 py3-pip git jq
+RUN pip install pipenv
 
-RUN apk update
-RUN apk add --no-cache python3 py3-pip git python3-dev libffi-dev openssl-dev gcc libc-dev rust cargo
-RUN pip install poetry
+COPY ./Pipfile /app
+COPY ./Pipfile.lock /app
+RUN pipenv install --system
 
 ADD src /app
-ADD etc /etc
-COPY ./poetry.lock /app
-COPY ./pyproject.toml /app
-RUN cd /app && poetry install --no-dev
+ADD etc /app/etc
 
 COPY ./scripts/run.sh /
 

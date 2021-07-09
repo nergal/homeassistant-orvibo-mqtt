@@ -83,9 +83,14 @@ class DeviceClimate(AbstractDevice):
         return dumps(payload)
 
     def on_connect(self, client, userdata, flags, rc):
-        client.subscribe(self.HA_INIT_TOPIC)
-        client.subscribe("%s/#" % self.topic_name)
-        self.do_initialize(client)
+        super().on_connect(client, userdata, flags, rc)
+
+        if client.is_connected():
+            client.subscribe(self.HA_INIT_TOPIC)
+            client.subscribe("%s/#" % self.topic_name)
+            self.do_initialize(client)
+        else:
+            _LOGGER.warning("There is no connection can be used to send init strings")
 
     def on_message(self, client, userdata, msg):
         if msg.topic == self.MODE_TOPIC % self.topic_name:
@@ -94,7 +99,7 @@ class DeviceClimate(AbstractDevice):
             t_value = int(float(msg.payload.decode("utf-8")))
             self.update_state(client, {"temperature": t_value})
         elif msg.topic == self.FAN_TOPIC % self.topic_name:
-            self.update_state(client, {"fan_mode": msg.payload.decode("utf-8")})
+            self.update_state(client, {"fanMode": msg.payload.decode("utf-8")})
         elif msg.topic == self.SWING_TOPIC % self.topic_name:
             self.update_state(client, {"swing": msg.payload.decode("utf-8")})
         elif msg.topic == self.HA_INIT_TOPIC:

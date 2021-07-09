@@ -32,7 +32,7 @@ class AbstractDevice(ABC):
 
     def get_mqtt_client(self, config):
         mqtt_host = config.get("mqtt_host")
-        mqtt_port = config.get("mqtt_port")
+        mqtt_port = int(config.get("mqtt_port", 0))
 
         client = mqtt.Client(self.mac)
         client.enable_logger()
@@ -69,7 +69,20 @@ class AbstractDevice(ABC):
 
     @abstractmethod
     def on_connect(self, client, userdata, flags, rc):
-        pass
+        if rc != mqtt.CONNACK_ACCEPTED:
+            message = "Unknown error occured during client connection"
+            if rc == mqtt.CONNACK_REFUSED_PROTOCOL_VERSION:
+                message = "Refused protocol version"
+            elif rc == mqtt.CONNACK_REFUSED_IDENTIFIER_REJECTED:
+                message = "Identifier rejected"
+            elif rc == mqtt.CONNACK_REFUSED_SERVER_UNAVAILABLE:
+                message = "Server unavailable"
+            elif rc == mqtt.CONNACK_REFUSED_BAD_USERNAME_PASSWORD:
+                message = "Bad username or password"
+            elif rc == mqtt.CONNACK_REFUSED_NOT_AUTHORIZED:
+                message = "User is not authorized"
+
+            _LOGGER.error("MQTT[code=%d] - %s", rc, message)
 
     @abstractmethod
     def on_message(self, client, userdata, msg):

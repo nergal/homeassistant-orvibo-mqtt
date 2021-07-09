@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+paho-mqtt = "==1.5.1"
+orvibo = {editable = true, ref = "72722b1", git = "https://github.com/wontonst/orvibo.git"}
+
+[dev-packages]
+black = "==21.6b0"
+flake8 = "==3.9.2"
+mypy = "==0.910"
+isort = "==5.9.2"
+
+[requires]
+python_version = "3.8"

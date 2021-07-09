@@ -7,6 +7,7 @@ SWING_MODES=("on" "off")
 MIN_TEMPERATURE=18
 MAX_TEMPERATURE=30
 SWING_MODE="swing"
+ON_MODE = "on"
 OFF_MODE="off"
 DRY_MODE="dry"
 FAN_MODE="fan_only"
@@ -19,7 +20,7 @@ function readCode {
     VALUE_KEY=$3
 
     if [ "$CHECK" = true ]; then
-        SHOULD_COMPLETE=$(cat $FILENAME | grep $VALUE_KEY)
+        SHOULD_COMPLETE=$(cat $FILENAME | grep "\"$VALUE_KEY\"")
         if [ $? -eq 0 ]; then
             echo "Record for ${VALUE_KEY} already present, skipping"
             return
@@ -29,7 +30,7 @@ function readCode {
     read -p "Reading ${VALUE_KEY} from ${IP}... ready?"
     
     temp_file=$(mktemp)
-    poetry run python -c "import orvibo;device = orvibo.Orvibo('${IP}');print('Learning...');device.learn('${temp_file}', timeout=15)"
+    pipenv run python -c "import orvibo;device = orvibo.Orvibo('${IP}');print('Learning...');device.learn('${temp_file}', timeout=15)"
 
     VALUE=$(cat $temp_file | hexdump -e '16/2 "%04x " " "' | sed -e 's/  //g')
 
@@ -72,6 +73,7 @@ max_temp=${max_temp:-MAX_TEMPERATURE}
 echo "Using ${FILENAME}..."
 echo ""
 
+readCode $IP $FILENAME $ON_MODE
 readCode $IP $FILENAME $OFF_MODE
 
 for fanMode in ${FAN_MODES[*]}

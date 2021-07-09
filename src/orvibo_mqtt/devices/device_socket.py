@@ -69,6 +69,8 @@ class DeviceSocket(AbstractDevice):
         self.send_availability(client, True)
 
     def on_connect(self, client, userdata, flags, rc):
+        super().on_connect(client, userdata, flags, rc)
+
         client.subscribe(self.HA_INIT_TOPIC)
         client.subscribe("%s/#" % self.topic_name)
 

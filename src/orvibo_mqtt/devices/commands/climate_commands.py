@@ -31,10 +31,13 @@ class ClimateCommands(AbstractCommands):
     ACTION_IDLE = "idle"
     ACTION_FAN = "fan"
 
+    COMMAND_OFF = "off"
+    COMMAND_ON = "on"
+
     MIN_TEMPERATURE = 18
     MAX_TEMPERATURE = 30
 
-    DEFAULT_TEMPERATURE = None
+    DEFAULT_TEMPERATURE = 23
 
     state = {
         "temperature": DEFAULT_TEMPERATURE,
@@ -77,7 +80,6 @@ class ClimateCommands(AbstractCommands):
         if "swing" in updates:
             self.state.update({"swing": updates["swing"]})
             return f"swing_{updates['swing']}"
-
         else:
             mode = state["mode"] if state["mode"] != self.MODE_OFF else self.MODE_COOL
 
@@ -111,6 +113,7 @@ class ClimateCommands(AbstractCommands):
                     return None
 
             if "mode" in updates:
+                send_on = False
                 if updates["mode"] == self.MODE_OFF:
                     self.state.update(
                         {
@@ -118,7 +121,9 @@ class ClimateCommands(AbstractCommands):
                             "action": self.ACTION_OFF,
                         }
                     )
-                    return self.MODE_OFF
+                    return self.COMMAND_OFF
+                elif state["mode"] == self.MODE_OFF:
+                    send_on = True
 
                 temp = (
                     state["temperature"]
@@ -131,9 +136,12 @@ class ClimateCommands(AbstractCommands):
                     {
                         "action": action,
                         "mode": updates["mode"],
-                        "temperature": temp if temp != state["temp"] else state["temp"],
+                        "temperature": temp if temp != state["temperature"] else state["temperature"],
                     }
                 )
+
+                if send_on:
+                    return self.COMMAND_ON
 
             return f"{state['mode']}_t{state['temperature']}_{state['fanMode']}"
 
