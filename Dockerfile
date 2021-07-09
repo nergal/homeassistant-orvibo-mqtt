@@ -2,20 +2,19 @@ ARG BUILD_FROM
 FROM $BUILD_FROM
 
 ENV LANG C.UTF-8
-RUN mkdir /app
-WORKDIR /app
 
-RUN apk add --no-cache python3 py3-pip git
+RUN apk update
+RUN apk add --no-cache python3 py3-pip git python3-dev libffi-dev openssl-dev gcc libc-dev rust cargo
+RUN pip install poetry
 
-COPY ./data/requirements.txt /app
-RUN pip3 install -r requirements.txt
+ADD src /app
+ADD etc /etc
+COPY ./poetry.lock /app
+COPY ./pyproject.toml /app
+RUN cd /app && poetry install --no-dev
 
-ADD data /app
-
-COPY ./data/run.sh /
+COPY ./scripts/run.sh /
 
 RUN chmod a+x /run.sh
-RUN ls -la /
-RUN ls -la /app
 
 CMD [ "/run.sh" ]

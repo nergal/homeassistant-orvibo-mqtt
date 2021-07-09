@@ -2,4 +2,4 @@
 __pycache__
 ir-reverse/
 mqtt.md
-config.yaml
+config.json

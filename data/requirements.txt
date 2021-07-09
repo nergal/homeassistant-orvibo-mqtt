@@ -1,4 +1,0 @@
-paho-mqtt==1.5.1
-confuse==1.4.0
-sdnotify==0.3.2
-git+https://github.com/wontonst/orvibo.git@72722b1

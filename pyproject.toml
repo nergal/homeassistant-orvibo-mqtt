@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "homeassistant-orvibo-mqtt"
+version = "0.0.5"
+description = ""
+authors = ["Artem Poliukhovych <me@2mio.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+paho-mqtt = "1.5.1"
+orvibo = { git = "https://github.com/wontonst/orvibo.git", branch = "72722b1" }
+
+[tool.poetry.dev-dependencies]
+black = "^21.6b0"
+flake8 = "^3.9.2"
+mypy = "^0.910"
+isort = "^5.9.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

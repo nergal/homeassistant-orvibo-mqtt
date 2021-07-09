@@ -1,0 +1,19 @@
+{
+    "mqtt_host": "127.0.0.1",
+    "mqtt_port": 1883,
+    "log_level": "info",
+    "dry_run": false,
+    "devices": [
+        {
+            "ip": "192.168.1.100",
+            "type": "switch",
+            "name": "Orvibo S20 - living room"
+        },
+        {
+            "ip": "192.168.1.101",
+            "type": "climate",
+            "commands_set": "lg_ac_irda",
+            "name": "IR LG A/C"
+        }
+    ]
+}
