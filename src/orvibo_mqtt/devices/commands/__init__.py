@@ -2,8 +2,8 @@ import logging
 import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Dict, Optional
 from pprint import pprint
+from typing import Dict, Optional
 
 from .abstract_commands import AbstractCommands
 

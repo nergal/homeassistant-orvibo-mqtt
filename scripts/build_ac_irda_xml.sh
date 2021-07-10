@@ -1,5 +1,7 @@
 #!/bin/bash
-""" This is a helper for learning IR codes from a remote for an A/C """
+#######################################################################
+### This is a helper for learning IR codes from a remote for an A/C ###
+#######################################################################
 
 FAN_MODES=("auto" "low" "medium" "high")
 TEMPERATURE_MODES=("cool" "heat" "auto")
@@ -7,7 +9,7 @@ SWING_MODES=("on" "off")
 MIN_TEMPERATURE=18
 MAX_TEMPERATURE=30
 SWING_MODE="swing"
-ON_MODE = "on"
+ON_MODE="on"
 OFF_MODE="off"
 DRY_MODE="dry"
 FAN_MODE="fan_only"

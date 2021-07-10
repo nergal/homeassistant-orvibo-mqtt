@@ -61,10 +61,15 @@ class DeviceSocket(AbstractDevice):
             self.device.on = False
             self.send_state(client, self.device.on)
         elif msg == self.HA_INIT_TOPIC:
-            self.do_initialize(client)
+            self.do_initialize(client, True)
 
-    def do_initialize(self, client):
-        _LOGGER.info("Send initialization info for %s (%s)" % (self.name, self.mac))
+    def do_initialize(self, client, ha_init=False):
+        _LOGGER.info(
+            "Send initialization info for %s (%s) because of %s",
+            self.name,
+            self.mac,
+            "HA Config event" if ha_init else "addon start",
+        )
         self.send_config(client)
         self.send_availability(client, True)
 

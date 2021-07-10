@@ -85,8 +85,6 @@ class ClimateCommands(AbstractCommands):
 
             if "fanMode" in updates:
                 self.state.update({"fanMode": updates["fanMode"], "mode": mode})
-
-            if mode == self.MODE_FAN:
                 return f"{state['mode']}_{state['fanMode']}"
 
             if "temperature" in updates:
@@ -136,7 +134,9 @@ class ClimateCommands(AbstractCommands):
                     {
                         "action": action,
                         "mode": updates["mode"],
-                        "temperature": temp if temp != state["temperature"] else state["temperature"],
+                        "temperature": temp
+                        if temp != state["temperature"]
+                        else state["temperature"],
                     }
                 )
 

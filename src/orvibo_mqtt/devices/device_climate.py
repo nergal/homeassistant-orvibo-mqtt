@@ -103,7 +103,7 @@ class DeviceClimate(AbstractDevice):
         elif msg.topic == self.SWING_TOPIC % self.topic_name:
             self.update_state(client, {"swing": msg.payload.decode("utf-8")})
         elif msg.topic == self.HA_INIT_TOPIC:
-            self.do_initialize(client)
+            self.do_initialize(client, True)
 
         _LOGGER.debug("Message received-> %s %s", msg.topic, str(msg.payload))
 
@@ -118,8 +118,13 @@ class DeviceClimate(AbstractDevice):
                     "!!! \U0001F6A8 !!! You are in dry run mode, any of commands won't be emitted by IR device"
                 )
 
-    def do_initialize(self, client):
-        _LOGGER.info("Send initialization info for %s (%s)" % (self.name, self.mac))
+    def do_initialize(self, client, ha_init=False):
+        _LOGGER.info(
+            "Send initialization info for %s (%s) because of %s",
+            self.name,
+            self.mac,
+            "HA Config event" if ha_init else "addon start",
+        )
         self.send_config(client)
         self.send_availability(client, True)
         self.send_stats(client)

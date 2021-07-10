@@ -1,6 +1,6 @@
 {
   "name": "Orvibo MQTT Addon",
-  "version": "0.0.5-13",
+  "version": "0.0.5-14",
   "slug": "orvibo_mqtt",
   "stage": "experimental",
   "description": "Orvibo MQTT integration for AllOne and S20",
