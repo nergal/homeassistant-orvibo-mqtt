@@ -9,7 +9,6 @@ import sys
 from orvibo_mqtt.device_zoo import DeviceZoo
 
 APP_NAME = "homeassistant-orvibo-mqtt"
-CONFIG_FILE = "config.yaml"
 
 
 class Config:

@@ -53,11 +53,11 @@ class DeviceSocket(AbstractDevice):
 
     def send_command(self, client, msg):
         if msg == self.ON_VALUE:
-            _LOGGER.info("Change state => ON")
+            _LOGGER.debug("Change state => ON")
             self.device.on = True
             self.send_state(client, self.device.on)
         elif msg == self.OFF_VALUE:
-            _LOGGER.info("Change state => OFF")
+            _LOGGER.debug("Change state => OFF")
             self.device.on = False
             self.send_state(client, self.device.on)
         elif msg == self.HA_INIT_TOPIC:

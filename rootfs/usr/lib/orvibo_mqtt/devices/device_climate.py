@@ -110,7 +110,8 @@ class DeviceClimate(AbstractDevice):
     def send_ir_signal(self, ir_command):
         signal = self.ir_commands.resolve(ir_command)
         if signal:
-            _LOGGER.warning("Executing command %s => %s", ir_command, signal.hex())
+            _LOGGER.info("Executing command %s", ir_command)
+            _LOGGER.debug("Payload for the command %s = %s", ir_command, signal.hex())
             if not self.dry_run:
                 self.device.emit_ir(signal)
             else:

@@ -15,7 +15,7 @@ class IRCommands:
 
     def __init__(self, filename: str, transpiler: AbstractCommands):
         self.transpiler = transpiler
-        mapping_file = Path(os.getcwd(), "etc", f"{filename}.xml")
+        mapping_file = Path(os.getcwd(), f"usr/share/{filename}.xml")
 
         if mapping_file.exists():
             mapping_root = ET.parse(mapping_file).getroot()

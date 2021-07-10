@@ -57,7 +57,7 @@ class ClimateCommands(AbstractCommands):
         if mode == self.MODE_AUTO:
             return self.ACTION_COOLING
         elif mode == self.MODE_COOL:
-            return self.MODE_COOL
+            return self.ACTION_COOLING
         elif mode == self.MODE_DRY:
             return self.ACTION_DRYING
         elif mode == self.MODE_FAN:
@@ -71,7 +71,7 @@ class ClimateCommands(AbstractCommands):
 
     def get_command_from_state(self, updates: dict) -> Optional[str]:
         for (name, value) in updates.items():
-            _LOGGER.info("Change %s => %s", name, value)
+            _LOGGER.debug("Change %s => %s", name, value)
 
         state = self.get_state()
         if not self.validate_change(updates):

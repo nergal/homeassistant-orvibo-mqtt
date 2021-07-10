@@ -1,6 +1,6 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
-WORKDIR /app
+
 ENV LANG C.UTF-8 \
   PYTHONFAULTHANDLER=1 \
   PYTHONHASHSEED=random \
@@ -13,15 +13,11 @@ ENV LANG C.UTF-8 \
 RUN apk add --no-cache python3 py3-pip git jq
 RUN pip install pipenv
 
-COPY ./Pipfile /app
-COPY ./Pipfile.lock /app
+COPY ./Pipfile* /
 RUN pipenv install --system
 
-ADD src /app
-ADD etc /app/etc
+ADD rootfs /
 
-COPY ./scripts/run.sh /
+RUN chmod a+x /usr/bin/orvibo_mqtt_daemon.sh
 
-RUN chmod a+x /run.sh
-
-CMD [ "/run.sh" ]
+CMD [ "/usr/bin/orvibo_mqtt_daemon.sh" ]

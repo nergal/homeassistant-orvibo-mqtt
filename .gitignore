@@ -1,5 +1,5 @@
 .vscode/
+.mypy_cache/
 __pycache__
-ir-reverse/
-mqtt.md
-config.json
+*.tmp/
+rootfs/usr/etc/daemon_config.json

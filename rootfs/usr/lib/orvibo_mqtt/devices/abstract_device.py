@@ -58,8 +58,7 @@ class AbstractDevice(ABC):
             self.thread.daemon = True
             self.thread.start()
         except (KeyboardInterrupt, SystemExit):
-            print("OFF")
-            _LOGGER.warning("EXIT")
+            _LOGGER.info("Exiting the loop for %s", self.name)
 
     def get_topic_name(self):
         return "homeassistant/%s/%s" % (self.type, self.mac)

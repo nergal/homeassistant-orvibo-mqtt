@@ -43,7 +43,7 @@ class DeviceZoo:
         for device in self.device_pool:
             device.loop_forever()
 
-        _LOGGER.info("Ready to go!")
+        _LOGGER.warning("Starting the loops")
 
         for device in self.device_pool:
             device.thread.join()

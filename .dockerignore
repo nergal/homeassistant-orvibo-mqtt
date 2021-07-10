@@ -1,0 +1,3 @@
+.*
+*.tmp
+rootfs/usr/etc/daemon_config.json

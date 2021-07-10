@@ -2,6 +2,9 @@
 
 ## Config
 bashio::log.info "Building daemon configuration..."
+HASSIO_UI_CONFIG_PATH=/data/options.json
+DAEMON_CONFIG_PATH=/data/configuration.json
+
 
 MQTT_HOST=$(bashio::config 'mqtt_host')
 MQTT_PORT=$(bashio::config 'mqtt_port')
@@ -26,15 +29,14 @@ else
     fi
 fi
 
-CONFIG_PATH=/data/options.json
 bashio::log.info "Adjusting Orvibo MQTT core JSON config with add-on quirks ..."
-cat "$CONFIG_PATH" \
+cat "$HASSIO_UI_CONFIG_PATH" \
     | MQTT_USERNAME="$MQTT_USERNAME"  jq '.mqtt_username=env.MQTT_USERNAME' \
     | MQTT_PASSWORD="$MQTT_PASSWORD" jq '.mqtt_password=env.MQTT_PASSWORD' \
     | MQTT_HOST="$MQTT_HOST" jq '.mqtt_host=env.MQTT_HOST' \
     | MQTT_PORT="$MQTT_PORT" jq '.mqtt_port=env.MQTT_PORT' \
-    > /data/configuration.json
+    > $DAEMON_CONFIG_PATH
 
 ## Execution
 bashio::log.info "Running Orvibo daemon..."
-python3 /app/main.py --config=/data/configuration.json
+python3 /usr/lib/orvibo_mqtt_daemon.py --config=$DAEMON_CONFIG_PATH
