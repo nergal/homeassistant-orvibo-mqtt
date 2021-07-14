@@ -23,6 +23,7 @@ class AbstractDevice(ABC):
         self.mac = binascii.hexlify(self.device.mac).decode("utf-8")
         self.topic_name = self.get_topic_name()
         self.dry_run = config.get("dry_run", False)
+        self.sleep_timeout = config.get("sleep", 1)
 
         self.client = self.get_mqtt_client(config)
 

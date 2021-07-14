@@ -1,4 +1,5 @@
 import logging
+import time
 from json import dumps
 
 from .abstract_device import AbstractDevice
@@ -120,6 +121,10 @@ class DeviceClimate(AbstractDevice):
                 )
 
     def do_initialize(self, client, ha_init=False):
+        if self.sleep_timeout:
+            _LOGGER.info("Sleep for %d seconds before sending initialization...", self.sleep_timeout)
+            time.sleep(self.sleep_timeout)
+
         _LOGGER.info(
             "Send initialization info for %s (%s) because of %s",
             self.name,

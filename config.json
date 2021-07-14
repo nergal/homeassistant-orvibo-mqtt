@@ -1,6 +1,6 @@
 {
   "name": "Orvibo MQTT Addon",
-  "version": "0.0.6-1",
+  "version": "0.0.6-2",
   "slug": "orvibo_mqtt",
   "stage": "experimental",
   "description": "Orvibo MQTT integration for AllOne and S20",
@@ -13,7 +13,8 @@
   "options": {
     "mqtt_host": "homeassistant.local",
     "mqtt_port": 1883,
-    "log_level": "debug",
+    "log_level": "info",
+    "sleep": 1,
     "devices": []
   },
   "schema": {
@@ -21,6 +22,7 @@
     "mqtt_port": "int",
     "mqtt_username": "str?",
     "mqtt_password": "str?",
+    "sleep": "int?",
     "log_level": "str?",
     "dry_run": "bool?",
     "devices": [
