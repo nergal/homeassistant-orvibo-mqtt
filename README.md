@@ -1,5 +1,7 @@
 # Homeassistant Orvibo MQTT
 
+[![Support Ukraine](https://img.shields.io/badge/Support%20Ukraine-Now-%23FFD500?labelColor=005BBB)](https://github.com/support-ukraine/support-ukraine)
+
 [![GitHub Release][releases-shield]][releases]
 ![Project Stage][project-stage-shield]
 [![Code style: black][black-shield]](https://github.com/psf/black)
