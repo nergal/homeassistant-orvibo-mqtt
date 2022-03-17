@@ -1,6 +1,6 @@
 # Homeassistant Orvibo MQTT
 
-[![Support Ukraine](https://img.shields.io/badge/Support%20Ukraine-Now-%23FFD500?labelColor=005BBB)](https://github.com/support-ukraine/support-ukraine)
+[![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
 [![GitHub Release][releases-shield]][releases]
 ![Project Stage][project-stage-shield]
@@ -37,7 +37,10 @@ This project is not affiliated, associated, authorized, endorsed by, or in any w
 ## License
 This project is under the MIT license.
 
-[!["Buy Me A Coffee"][coffee-badge]](https://www.buymeacoffee.com/nalecz)
+## Additional information for users from Russia and Belarus
+* Russia has [illegally annexed Crimea in 2014](https://en.wikipedia.org/wiki/Annexation_of_Crimea_by_the_Russian_Federation) and [brought the war in Donbas](https://en.wikipedia.org/wiki/War_in_Donbas) followed by [full-scale invasion of Ukraine in 2022](https://en.wikipedia.org/wiki/2022_Russian_invasion_of_Ukraine).
+* Russia has brought sorrow and devastations to millions of Ukrainians, killed hundreds of innocent people, damaged thousands of buildings, and forced several million people to flee.
+* [Putin khuylo!](https://en.wikipedia.org/wiki/Putin_khuylo!)
 
 
 [black-shield]: https://img.shields.io/badge/code%20style-black-000000.svg
