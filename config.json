@@ -1,6 +1,6 @@
 {
   "name": "Orvibo MQTT Addon",
-  "version": "0.0.6-3",
+  "version": "0.0.6-4",
   "init": false,
   "slug": "orvibo_mqtt",
   "stage": "experimental",
